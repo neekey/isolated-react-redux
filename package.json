@@ -1,0 +1,41 @@
+{
+  "name": "isolated-react-redux",
+  "version": "0.0.1",
+  "description": "Provide a isolated redux style way to handle state",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src --out-dir dist",
+    "prepublish": "babel src --out-dir dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neekey/isolated-react-redux.git"
+  },
+  "keywords": [
+    "react",
+    "react-redux",
+    "redux",
+    "isolate"
+  ],
+  "author": "neekey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neekey/isolated-react-redux/issues"
+  },
+  "homepage": "https://github.com/neekey/isolated-react-redux#readme",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-core": "^6.17.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "chai": "^3.5.0",
+    "enzyme": "^2.4.1",
+    "mocha": "^3.1.0"
+  },
+  "dependencies": {
+    "react": "^15.3.2",
+    "react-redux": "^4.4.5"
+  }
+}
