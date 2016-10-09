@@ -1,6 +1,6 @@
 {
   "name": "isolated-react-redux",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Provide a isolated redux style way to handle state",
   "main": "dist/index.js",
   "scripts": {
