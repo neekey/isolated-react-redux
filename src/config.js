@@ -1,5 +1,5 @@
 export default {
-  domain: 'ISOLATED_STATE',
-  keyPrefix: 'ISOLATED_STATE_',
-  keyName: 'ISOLATED_STATE_KEY',
+  domain: 'ISOLATED_REACT_REDUX',
+  keyPrefix: 'ISOLATED_REACT_REDUX_',
+  keyName: 'ISOLATED_REACT_REDUX_KEY',
 };
