@@ -1,0 +1,6 @@
+-R spec
+-t 0
+--colors
+--compilers js:babel-core/register
+--watch
+test/**/*.spec.js

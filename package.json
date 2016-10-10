@@ -4,7 +4,7 @@
   "description": "Provide a isolated redux style way to handle state",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "babel src --out-dir dist",
     "prepublish": "babel src --out-dir dist"
   },
@@ -32,7 +32,9 @@
     "babel-preset-stage-0": "^6.16.0",
     "chai": "^3.5.0",
     "enzyme": "^2.4.1",
-    "mocha": "^3.1.0"
+    "mocha": "^3.1.0",
+    "redux": "^3.6.0",
+    "sinon": "^1.17.6"
   },
   "dependencies": {
     "react": "^15.3.2",

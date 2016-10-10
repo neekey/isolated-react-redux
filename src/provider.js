@@ -4,12 +4,12 @@ import { clearInstanceState } from './action';
 import React from 'react';
 import config from './config';
 
-const ISOLATED_ACTION_CREATORS_KEY_NAME = `${config.keyPrefix}actionCreators`;
-const ISOLATED_DISPATCH_KEY_NAME = `${config.keyPrefix}dispatch`;
 const ISOLATED_KEY_NAME = config.keyName;
+const ISOLATED_ACTION_CREATORS_KEY_NAME = Symbol('actionCreators');
+const ISOLATED_COMPONENT_UNMOUNT = Symbol('onUnmount');
 
 function createUniqueKey() {
-  return Math.random();
+  return Symbol(config.keyName);
 }
 
 function wrapAction(key, action) {
@@ -26,17 +26,18 @@ function wrapAction(key, action) {
 function wrapComponent(Component) {
   class IsolatedComponent extends React.Component {
     componentWillUnmount() {
-      this.props[ISOLATED_DISPATCH_KEY_NAME](clearInstanceState(this.props[ISOLATED_KEY_NAME]));
+      this.props[ISOLATED_COMPONENT_UNMOUNT]();
     }
 
     render() {
-      return <Component {...this.props} />;
+      const props = { ...this.props};
+      delete props.onUnmount;
+      return <Component {...props} />;
     }
   }
 
-  IsolatedComponent.propTypes = {
-    dispatch: React.PropTypes.func,
-  };
+  const displayName = Component.displayName || Component.name || 'Component';
+  IsolatedComponent.displayName = `${config.domain}(${displayName})`;
 
   return IsolatedComponent;
 }
@@ -49,7 +50,9 @@ export default function provider({
   mapStateToProps,
   mapDispatchToProps,
 }) {
-  return connect(() => {
+  const hasPersistentKey = typeof key !== 'undefined';
+
+  function _mapStateToProps() {
     let uniqueKey = key;
     if (!uniqueKey) {
       uniqueKey = createUniqueKey();
@@ -72,18 +75,31 @@ export default function provider({
         [ISOLATED_KEY_NAME]: uniqueKey,
       };
     };
-  }, dispatch => ({ dispatch }), (stateProps, { dispatch }, ownProps) => {
-    const actionCreatorsKeyName = ISOLATED_ACTION_CREATORS_KEY_NAME;
+  }
+
+  function _mapDispatchToProps(dispatch) {
+    return {
+      dispatch,
+    };
+  }
+
+  function _mergeProps(stateProps, { dispatch }, ownProps) {
     const restStateProps = { ...stateProps };
-    const actionCreators = restStateProps[actionCreatorsKeyName];
-    delete restStateProps[actionCreatorsKeyName];
+    const actionCreators = restStateProps[ISOLATED_ACTION_CREATORS_KEY_NAME];
+    delete restStateProps[ISOLATED_ACTION_CREATORS_KEY_NAME];
+    const instanceKey = stateProps[ISOLATED_KEY_NAME];
+    delete stateProps[ISOLATED_KEY_NAME];
 
     if (mapDispatchToProps) {
       return {
-        [ISOLATED_DISPATCH_KEY_NAME]: dispatch,
         ...ownProps,
         ...restStateProps,
         ...mapDispatchToProps(dispatch, ownProps, actionCreators),
+        [ISOLATED_COMPONENT_UNMOUNT]: () => {
+          if (!hasPersistentKey) {
+            dispatch(clearInstanceState(instanceKey));
+          }
+        },
       };
     }
 
@@ -93,10 +109,11 @@ export default function provider({
     });
 
     return {
-      [ISOLATED_DISPATCH_KEY_NAME]: dispatch,
       ...ownProps,
       ...restStateProps,
       ...actionHandlers,
     };
-  })(wrapComponent(component));
+  }
+
+  return connect(_mapStateToProps, _mapDispatchToProps, _mergeProps)(wrapComponent(component, hasPersistentKey));
 }
